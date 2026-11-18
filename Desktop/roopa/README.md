@@ -136,5 +136,33 @@ MLflow database or `mlruns\` directory at runtime.
 
 The workflow at `.github/workflows/docker.yml` runs on pushes, pull requests,
 and manual dispatch. It builds the Docker image, checks that the Streamlit app
-responds, and runs a prediction using the model inside the container. It
-validates the image but does not publish it to a container registry.
+responds, and runs a prediction using the model inside the container. After
+these checks pass, pushes publish a commit-specific image to Docker Hub; pushes
+to the default branch also update the `latest` tag. Pull requests only build
+and test, and do not publish.
+
+To enable publishing:
+
+1. Create a Docker Hub repository named `california-housing-ui`.
+2. Create a Docker Hub access token with read/write permission.
+3. In the GitHub repository, open **Settings > Secrets and variables >
+   Actions > New repository secret** and add `DOCKERHUB_USERNAME` with your
+   Docker Hub username and `DOCKERHUB_TOKEN` with the access token.
+4. Push this project to GitHub with the `roopa` folder as the repository root.
+   The workflow will run automatically. Check the **Actions** tab for build,
+   validation, and publishing results.
+
+Every successful push creates a tag such as
+`<dockerhub-username>/california-housing-ui:sha-<commit-sha>`. On the default
+branch it also updates `<dockerhub-username>/california-housing-ui:latest`.
+
+To download and run the latest default-branch image, replace
+`YOUR_DOCKERHUB_USERNAME` with your Docker Hub username:
+
+```powershell
+docker pull YOUR_DOCKERHUB_USERNAME/california-housing-ui:latest
+docker run --rm -p 8502:8501 YOUR_DOCKERHUB_USERNAME/california-housing-ui:latest
+```
+
+Open [http://localhost:8502](http://localhost:8502). The host port is `8502`
+because `8501` may already be used by another local container.
