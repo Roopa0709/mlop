@@ -1,0 +1,8 @@
+myenv
+__pycache__
+*.py[cod]
+mlflow.db
+mlruns
+.git
+.venv
+venv

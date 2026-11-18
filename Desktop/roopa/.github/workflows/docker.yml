@@ -1,0 +1,56 @@
+name: Build and validate Docker image
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: california-housing-ui:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Start Streamlit container
+        run: docker run --detach --name california-housing-ui-ci -p 127.0.0.1:8501:8501 california-housing-ui:ci
+
+      - name: Check web app
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8501/_stcore/health; then
+              echo
+              curl --fail --silent --show-error http://127.0.0.1:8501/ > /dev/null
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs california-housing-ui-ci
+          exit 1
+
+      - name: Check model prediction
+        run: |
+          docker exec california-housing-ui-ci python -c 'import math; import mlflow; import pandas as pd; model = mlflow.pyfunc.load_model("/app/model"); frame = pd.DataFrame([[8.3252, 41.0, 6.9841, 1.0238, 322.0, 2.5556, 37.88, -122.23]], columns=["MedInc", "HouseAge", "AveRooms", "AveBedrms", "Population", "AveOccup", "Latitude", "Longitude"]); prediction = float(model.predict(frame)[0]); assert math.isfinite(prediction), prediction; print(f"Prediction: {prediction:.3f}")'
+
+      - name: Show container logs on failure
+        if: failure()
+        run: docker logs california-housing-ui-ci
+
+      - name: Remove test container
+        if: always()
+        run: docker rm --force california-housing-ui-ci 2>/dev/null || true

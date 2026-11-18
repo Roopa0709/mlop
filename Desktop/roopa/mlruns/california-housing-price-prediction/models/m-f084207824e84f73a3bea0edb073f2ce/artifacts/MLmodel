@@ -1,0 +1,39 @@
+artifact_path: file:///C:/Users/ISE-IOTLAB/Desktop/roopa/mlruns/california-housing-price-prediction/models/m-f084207824e84f73a3bea0edb073f2ce/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.skops
+    predict_fn: predict
+    python_version: 3.14.7
+  sklearn:
+    code: null
+    pickled_model: model.skops
+    serialization_format: skops
+    sklearn_version: 1.9.1
+    skops_trusted_types: null
+is_signature_from_type_hint: false
+mlflow_version: 3.16.1
+model_id: m-f084207824e84f73a3bea0edb073f2ce
+model_size_bytes: 27780
+model_uuid: m-f084207824e84f73a3bea0edb073f2ce
+prompts: null
+run_id: 672e4c27f4314a64985c1c9a5fd2720e
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  serving_input_path: serving_input_example.json
+  type: dataframe
+signature:
+  inputs: '[{"type": "double", "name": "MedInc", "required": true}, {"type": "double",
+    "name": "HouseAge", "required": true}, {"type": "double", "name": "AveRooms",
+    "required": true}, {"type": "double", "name": "AveBedrms", "required": true},
+    {"type": "double", "name": "Population", "required": true}, {"type": "double",
+    "name": "AveOccup", "required": true}, {"type": "double", "name": "Latitude",
+    "required": true}, {"type": "double", "name": "Longitude", "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "float64", "shape": [-1]}}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2026-11-04 05:00:22.975455'

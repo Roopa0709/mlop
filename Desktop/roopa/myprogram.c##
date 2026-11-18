@@ -1,0 +1,20 @@
+#include <stdlib.h>
+#include <string.h>
+#include  <stdio.h>
+#include <ctype.h>
+# define STACK_MAX_SIZE 20
+char stack [STACK_MAX_SIZE];
+int top = -1
+void push (char X)
+{
+    stack[++top]=x;
+
+}
+int isEmpty()
+{
+    return== -1
+}
+void push (char x)
+{
+    stack[++ top]=x
+}
